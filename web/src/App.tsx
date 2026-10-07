@@ -54,144 +54,191 @@ export const App: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const getTabStyle = (tab: TabType) => {
+    const isActive = activeTab === tab;
+    return {
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '8px',
+      padding: '9px 18px',
+      borderRadius: '12px',
+      fontSize: '13px',
+      fontWeight: '700',
+      cursor: 'pointer',
+      whiteSpace: 'nowrap' as const,
+      transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+      backgroundColor: isActive ? '#06b6d4' : 'rgba(255, 255, 255, 0.04)',
+      color: isActive ? '#ffffff' : '#94a3b8',
+      border: isActive ? '1px solid #22d3ee' : '1px solid rgba(255, 255, 255, 0.08)',
+      boxShadow: isActive ? '0 4px 18px rgba(6, 182, 212, 0.45)' : 'none',
+    };
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-[#070a13] text-slate-100">
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#070a13', color: '#f1f5f9' }}>
       {/* Top Navbar */}
-      <header className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80 px-4 lg:px-8 py-3.5">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <header
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 50,
+          backgroundColor: 'rgba(2, 6, 23, 0.88)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderBottom: '1px solid rgba(30, 41, 59, 0.8)',
+          padding: '14px 20px'
+        }}
+      >
+        <div style={{ maxWidth: '1360px', margin: '0 auto', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
           {/* Logo & Info */}
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-gradient-to-tr from-cyan-600 to-cyan-400 text-white shadow-lg shadow-cyan-500/25">
-              <Activity className="w-6 h-6" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div
+              style={{
+                padding: '10px',
+                borderRadius: '14px',
+                background: 'linear-gradient(135deg, #06b6d4 0%, #0284c7 100%)',
+                color: '#ffffff',
+                boxShadow: '0 4px 18px rgba(6, 182, 212, 0.35)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <Activity style={{ width: 22, height: 22 }} />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-lg font-black tracking-tight text-white font-display">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h1 style={{ fontSize: '18px', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.02em', margin: 0 }}>
                   Network QoS Monitor
                 </h1>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-cyan-950/80 text-cyan-300 border border-cyan-800/60 font-semibold">
+                <span
+                  style={{
+                    fontSize: '10px',
+                    fontFamily: 'monospace',
+                    padding: '2px 8px',
+                    borderRadius: '6px',
+                    backgroundColor: 'rgba(8, 51, 68, 0.8)',
+                    color: '#67e8f9',
+                    border: '1px solid rgba(21, 94, 117, 0.6)',
+                    fontWeight: 700
+                  }}
+                >
                   v1.0 • LSI 2026
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400">
+              <p style={{ fontSize: '11px', color: '#94a3b8', margin: '2px 0 0 0' }}>
                 Analizador de Calidad de Red Móvil en Tiempo Real & Mapeo de Cobertura
               </p>
             </div>
           </div>
 
           {/* Active Status Badges */}
-          <div className="flex items-center gap-2 self-start md:self-auto">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
             {/* Backend status badge */}
             <div
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono border ${
-                backendOnline
-                  ? 'bg-emerald-950/60 border-emerald-800/60 text-emerald-400'
-                  : 'bg-amber-950/60 border-amber-800/60 text-amber-400'
-              }`}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '5px 12px',
+                borderRadius: '8px',
+                fontSize: '12px',
+                fontFamily: 'monospace',
+                backgroundColor: backendOnline ? 'rgba(6, 78, 59, 0.6)' : 'rgba(120, 53, 15, 0.6)',
+                border: backendOnline ? '1px solid rgba(6, 95, 70, 0.6)' : '1px solid rgba(146, 64, 14, 0.6)',
+                color: backendOnline ? '#34d399' : '#fbbf24',
+                fontWeight: 600
+              }}
               title={backendOnline ? 'Backend de referencia en línea' : 'Backend no detectado en localhost:3001'}
             >
-              <Server className="w-3.5 h-3.5" />
+              <Server style={{ width: 14, height: 14 }} />
               <span>Backend {backendOnline ? 'Online' : 'Offline'}</span>
             </div>
 
             {/* Network Type & Operator badge */}
             {currentNetwork && (
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono bg-slate-900 border border-slate-800 text-cyan-300">
-                <Radio className="w-3.5 h-3.5 text-cyan-400" />
-                <span className="font-bold">{currentNetwork.networkGeneration}</span>
-                <span className="text-slate-500">•</span>
-                <span className="text-slate-300">{currentNetwork.operatorName}</span>
-                <span className="text-slate-500">•</span>
-                <span className="text-emerald-400">{currentNetwork.signal.dbm}dBm</span>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '5px 14px',
+                  borderRadius: '8px',
+                  fontSize: '12px',
+                  fontFamily: 'monospace',
+                  backgroundColor: '#0f172a',
+                  border: '1px solid #1e293b',
+                  color: '#67e8f9',
+                  fontWeight: 600
+                }}
+              >
+                <Radio style={{ width: 14, height: 14, color: '#22d3ee' }} />
+                <span style={{ fontWeight: 800 }}>{currentNetwork.networkGeneration}</span>
+                <span style={{ color: '#475569' }}>•</span>
+                <span style={{ color: '#cbd5e1' }}>{currentNetwork.operatorName}</span>
+                <span style={{ color: '#475569' }}>•</span>
+                <span style={{ color: '#34d399', fontWeight: 800 }}>{currentNetwork.signal.dbm}dBm</span>
               </div>
             )}
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="max-w-7xl mx-auto mt-3 pt-2 flex items-center gap-1 overflow-x-auto no-scrollbar">
-          <button
-            onClick={() => setActiveTab('dashboard')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
-              activeTab === 'dashboard'
-                ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/30'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
-            }`}
-          >
-            <Activity className="w-4 h-4" />
-            Panel General
+        {/* Navigation Tabs Pill Bar */}
+        <div
+          style={{
+            maxWidth: '1360px',
+            margin: '14px auto 0 auto',
+            paddingTop: '6px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            overflowX: 'auto'
+          }}
+          className="no-scrollbar"
+        >
+          <button onClick={() => setActiveTab('dashboard')} style={getTabStyle('dashboard')}>
+            <Activity style={{ width: 16, height: 16 }} />
+            <span>Panel General</span>
           </button>
 
-          <button
-            onClick={() => setActiveTab('test')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
-              activeTab === 'test'
-                ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/30'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
-            }`}
-          >
-            <Play className="w-4 h-4" />
-            Test Activo (RFC 2544)
+          <button onClick={() => setActiveTab('test')} style={getTabStyle('test')}>
+            <Play style={{ width: 16, height: 16 }} />
+            <span>Test Activo (RFC 2544)</span>
           </button>
 
-          <button
-            onClick={() => setActiveTab('map')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
-              activeTab === 'map'
-                ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/30'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
-            }`}
-          >
-            <Map className="w-4 h-4" />
-            Mapa de Calor (Heatmap)
+          <button onClick={() => setActiveTab('map')} style={getTabStyle('map')}>
+            <Map style={{ width: 16, height: 16 }} />
+            <span>Mapa de Calor (Heatmap)</span>
           </button>
 
-          <button
-            onClick={() => setActiveTab('analytics')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
-              activeTab === 'analytics'
-                ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/30'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
-            }`}
-          >
-            <BarChart3 className="w-4 h-4" />
-            Analítica & Gráficos
+          <button onClick={() => setActiveTab('analytics')} style={getTabStyle('analytics')}>
+            <BarChart3 style={{ width: 16, height: 16 }} />
+            <span>Analítica & Gráficos</span>
           </button>
 
-          <button
-            onClick={() => setActiveTab('history')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
-              activeTab === 'history'
-                ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/30'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
-            }`}
-          >
-            <History className="w-4 h-4" />
-            Historial de Sesiones
+          <button onClick={() => setActiveTab('history')} style={getTabStyle('history')}>
+            <History style={{ width: 16, height: 16 }} />
+            <span>Historial de Sesiones</span>
           </button>
 
-          <button
-            onClick={() => setActiveTab('settings')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
-              activeTab === 'settings'
-                ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/30'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
-            }`}
-          >
-            <Settings className="w-4 h-4" />
-            Exportar & Configuración
+          <button onClick={() => setActiveTab('settings')} style={getTabStyle('settings')}>
+            <Settings style={{ width: 16, height: 16 }} />
+            <span>Exportar & Configuración</span>
           </button>
         </div>
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-8">
+      <main style={{ flex: 1, maxWidth: '1360px', width: '100%', margin: '0 auto', padding: '32px 20px' }}>
         {/* Real-time Degradation Alerts Banner */}
         <DegradationAlertBanner alerts={alerts} onDismiss={dismissAlert} />
 
         {/* Tab View Switcher */}
         {activeTab === 'dashboard' && (
-          <DashboardView onStartTest={() => setActiveTab('test')} />
+          <DashboardView
+            onStartTest={() => setActiveTab('test')}
+            onGoToMap={() => setActiveTab('map')}
+          />
         )}
         {activeTab === 'test' && (
           <ActiveTestView
@@ -206,14 +253,22 @@ export const App: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950/90 py-5 px-6 text-center text-xs text-slate-400 font-sans">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-slate-300">Desarrollo de Aplicaciones Móviles 2026</span>
+      <footer
+        style={{
+          borderTop: '1px solid #1e293b',
+          backgroundColor: 'rgba(2, 6, 23, 0.95)',
+          padding: '16px 20px',
+          fontSize: '12px',
+          color: '#64748b'
+        }}
+      >
+        <div style={{ maxWidth: '1360px', margin: '0 auto', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontWeight: 600, color: '#cbd5e1' }}>Desarrollo de Aplicaciones Móviles 2026</span>
             <span>•</span>
             <span>Licenciatura en Sistemas de Información</span>
           </div>
-          <div className="flex items-center gap-4 text-[11px] text-slate-400 font-mono">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '11px', fontFamily: 'monospace' }}>
             <span>RFC 2544 Benchmarking</span>
             <span>RFC 3550 RTP Jitter</span>
             <span>Android TelephonyManager & iOS CoreTelephony</span>

@@ -50,9 +50,17 @@ export const CoverageMapView: React.FC = () => {
       : 0;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }} className="animate-fade-in">
       {/* Filter and Control Bar */}
-      <div className="glass-panel p-5">
+      <div
+        className="glass-panel"
+        style={{
+          padding: '24px 28px',
+          borderRadius: '20px',
+          border: '1px solid rgba(6, 182, 212, 0.25)',
+          background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(8, 51, 68, 0.25) 100%)'
+        }}
+      >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Filter className="w-4 h-4 text-cyan-400" />

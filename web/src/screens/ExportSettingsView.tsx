@@ -105,9 +105,17 @@ export const ExportSettingsView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }} className="animate-fade-in">
       {/* Export & Sync Section (RF-08) */}
-      <div className="glass-panel p-6">
+      <div
+        className="glass-panel"
+        style={{
+          padding: '24px 28px',
+          borderRadius: '20px',
+          border: '1px solid rgba(6, 182, 212, 0.25)',
+          background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(8, 51, 68, 0.25) 100%)'
+        }}
+      >
         <div className="flex items-center gap-2 mb-2">
           <Download className="w-5 h-5 text-cyan-400" />
           <h2 className="text-xl font-extrabold text-slate-100 font-display">

@@ -1,12 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@import "tailwindcss";
+@source "./index.html";
+@source "./src/**/*.{js,ts,jsx,tsx}";
 
 :root {
   --bg-primary: #070a13;
   --bg-secondary: #0d1322;
-  --bg-card: rgba(18, 26, 45, 0.75);
-  --bg-card-hover: rgba(26, 38, 66, 0.85);
+  --bg-card: rgba(15, 23, 42, 0.75);
+  --bg-card-hover: rgba(24, 34, 58, 0.85);
   --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-glow: rgba(6, 182, 212, 0.3);
+  --border-glow: rgba(6, 182, 212, 0.35);
   
   --color-cyan: #06b6d4;
   --color-cyan-glow: rgba(6, 182, 212, 0.25);
@@ -31,77 +35,76 @@ body {
   color: #f1f5f9;
   font-family: var(--font-sans);
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
   overflow-x: hidden;
   background-image: 
-    radial-gradient(circle at 15% 15%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 85% 85%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
+    radial-gradient(circle at 20% 10%, rgba(6, 182, 212, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 80% 85%, rgba(139, 92, 246, 0.10) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8) 0%, #070a13 100%);
   background-attachment: fixed;
 }
 
 h1, h2, h3, h4, .font-display {
   font-family: var(--font-display);
+  letter-spacing: -0.02em;
 }
 
 .font-mono {
   font-family: var(--font-mono);
 }
 
-/* Glassmorphism card styles */
+/* Base button reset & smooth interaction */
+button {
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Glassmorphism panel styling */
 .glass-panel {
   background: var(--bg-card);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-subtle);
   border-radius: 16px;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-panel:hover {
-  border-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .glass-panel-glow {
-  box-shadow: 0 0 25px -5px var(--color-cyan-glow), 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 30px -5px var(--color-cyan-glow), 0 10px 30px -10px rgba(0, 0, 0, 0.6);
   border-color: var(--border-glow);
 }
 
-/* Custom Scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(6, 182, 212, 0.5);
-}
-
-/* Buttons */
+/* Modern buttons */
 .btn-primary {
   background: linear-gradient(135deg, #06b6d4 0%, #0284c7 100%);
   color: white;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 0.875rem;
   border-radius: 12px;
-  padding: 10px 20px;
+  padding: 10px 22px;
   border: none;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.35);
-  transition: all 0.2s ease;
+  box-shadow: 0 4px 18px rgba(6, 182, 212, 0.35);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5);
+  box-shadow: 0 6px 24px rgba(6, 182, 212, 0.5);
   filter: brightness(1.1);
 }
 
@@ -110,22 +113,25 @@ h1, h2, h3, h4, .font-display {
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.06);
-  color: #e2e8f0;
-  font-weight: 500;
+  background: rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+  font-weight: 600;
+  font-size: 0.8rem;
   border-radius: 12px;
-  padding: 10px 18px;
+  padding: 9px 18px;
   border: 1px solid var(--border-subtle);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   transition: all 0.2s ease;
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
 }
 
 /* Badges */
@@ -136,33 +142,33 @@ h1, h2, h3, h4, .font-display {
   padding: 4px 10px;
   border-radius: 9999px;
   font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .badge-5g {
-  background: rgba(6, 182, 212, 0.15);
-  color: #22d3ee;
-  border: 1px solid rgba(6, 182, 212, 0.3);
+  background: rgba(168, 85, 247, 0.18);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.4);
 }
 
 .badge-4g {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: rgba(6, 182, 212, 0.18);
+  color: #22d3ee;
+  border: 1px solid rgba(6, 182, 212, 0.4);
 }
 
 .badge-3g {
-  background: rgba(245, 158, 11, 0.15);
+  background: rgba(245, 158, 11, 0.18);
   color: #fbbf24;
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  border: 1px solid rgba(245, 158, 11, 0.4);
 }
 
 .badge-wifi {
-  background: rgba(139, 92, 246, 0.15);
-  color: #a78bfa;
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: rgba(16, 185, 129, 0.18);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
 }
 
 /* Pulsing radar dot */
@@ -186,7 +192,7 @@ h1, h2, h3, h4, .font-display {
   100% { transform: translate(-50%, -50%) scale(2.8); opacity: 0; }
 }
 
-/* Speedometer / Gauge styles */
+/* Gauge rotation */
 .gauge-svg {
   transform: rotate(-90deg);
   transform-origin: 50% 50%;
@@ -204,22 +210,109 @@ h1, h2, h3, h4, .font-display {
 
 /* Leaflet dark theme adjustments */
 .leaflet-container {
-  background: #090e1a !important;
+  background: #070a13 !important;
   font-family: var(--font-sans) !important;
 }
 
 .leaflet-tile {
-  filter: brightness(0.7) invert(1) contrast(2.5) hue-rotate(200deg) saturate(0.3) !important;
+  filter: brightness(0.65) invert(1) contrast(2.2) hue-rotate(200deg) saturate(0.3) !important;
 }
 
 .leaflet-popup-content-wrapper {
   background: #0f172a !important;
   color: #f8fafc !important;
-  border-radius: 12px !important;
+  border-radius: 14px !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.75) !important;
 }
 
 .leaflet-popup-tip {
   background: #0f172a !important;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(6, 182, 212, 0.5);
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Layout Centering & Universal Utilities */
+.max-w-7xl {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+.gap-6 { gap: 1.5rem; }
+
+.grid {
+  display: grid;
+}
+
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .md\:flex-row { flex-direction: row; }
+  .md\:items-center { align-items: center; }
+  .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1024px) {
+  .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .lg\:col-span-2 { grid-column: span 2 / span 2; }
+  .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+  .lg\:p-8 { padding: 2rem; }
 }

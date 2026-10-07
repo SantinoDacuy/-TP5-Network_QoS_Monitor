@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>es</string>
+	<key>CFBundleDisplayName</key>
+	<string>Network QoS Monitor</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+
+	<!-- Location Permissions (RF-04, RF-05) -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Se requiere acceso a la ubicación geográfica para correlacionar la calidad de la señal con coordenadas precisas y generar el mapa de calor.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Se requiere ubicación en segundo plano para el muestreo periódico de cobertura celular cuando el dispositivo esté bloqueado.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Mapeo continuo de calidad de red móvil en segundo plano.</string>
+
+	<!-- Background Modes (RF-07) -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>processing</string>
+		<string>location</string>
+	</array>
+
+	<!-- Local Network & Sockets (RF-02, RF-03) -->
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Permite realizar sondas de latencia (ping) y throughput contra servidores de prueba de red.</string>
+</dict>
+</plist>

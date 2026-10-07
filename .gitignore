@@ -9,3 +9,7 @@ yarn-error.log*
 .idea/
 .vscode/
 *.local
+.gradle/
+**/android/.gradle/
+**/android/app/.gradle/
+

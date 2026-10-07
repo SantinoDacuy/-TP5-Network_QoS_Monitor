@@ -5,21 +5,23 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
-  ScrollView,
-  Alert
+  TouchableOpacity
 } from 'react-native';
 import { useQoSStore, initQoSStore } from './src/state/useQoSStore';
+import { DashboardScreen } from './src/presentation/screens/DashboardScreen';
+import { ActiveTestScreen } from './src/presentation/screens/ActiveTestScreen';
+import { CoverageMapScreen } from './src/presentation/screens/CoverageMapScreen';
+import { AnalyticsScreen } from './src/presentation/screens/AnalyticsScreen';
+import { HistoryScreen } from './src/presentation/screens/HistoryScreen';
+import { SettingsScreen } from './src/presentation/screens/SettingsScreen';
+import { DegradationAlertBanner } from './src/presentation/components/DegradationAlertBanner';
+import { colors } from './src/theme/colors';
+
+export type TabType = 'dashboard' | 'test' | 'map' | 'analytics' | 'history' | 'settings';
 
 export default function App(): React.JSX.Element {
-  const {
-    currentNetwork,
-    currentLocation,
-    records,
-    activeTestPhase,
-    runFullQoSTest,
-    refreshTelephony
-  } = useQoSStore();
+  const [activeTab, setActiveTab] = useState<TabType>('dashboard');
+  const { currentNetwork, alerts, dismissAlert, activeTestPhase } = useQoSStore();
 
   useEffect(() => {
     initQoSStore();
@@ -29,68 +31,114 @@ export default function App(): React.JSX.Element {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#070a13" />
+      <StatusBar barStyle="light-content" backgroundColor={colors.background} />
 
-      {/* Header */}
+      {/* Header Bar */}
       <View style={styles.header}>
-        <Text style={styles.title}>Network QoS Monitor</Text>
-        <Text style={styles.subtitle}>Analizador de Calidad de Red Móvil (LSI 2026)</Text>
+        <View style={styles.headerTop}>
+          <View style={styles.titleRow}>
+            <Text style={styles.headerTitle}>Network QoS Monitor</Text>
+            <View style={styles.versionBadge}>
+              <Text style={styles.versionText}>LSI 2026</Text>
+            </View>
+          </View>
+
+          {currentNetwork && (
+            <View style={styles.networkPill}>
+              <View style={[styles.networkDot, {
+                backgroundColor: currentNetwork.networkGeneration === '5G' ? colors.gen5G :
+                                 currentNetwork.networkGeneration === '4G' ? colors.gen4G :
+                                 currentNetwork.networkGeneration === '3G' ? colors.gen3G : colors.genWifi
+              }]} />
+              <Text style={styles.networkPillText}>
+                {currentNetwork.networkGeneration} • {currentNetwork.signal.dbm}dBm
+              </Text>
+            </View>
+          )}
+        </View>
+
+        <Text style={styles.headerSubtitle}>
+          Analizador de Calidad de Red Móvil & Mapeo de Cobertura
+        </Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
-        {/* Network Status Card */}
-        <View style={styles.card}>
-          <Text style={styles.cardLabel}>RED CELULAR / WIFI ACTIVA</Text>
-          <Text style={styles.operatorText}>
-            {currentNetwork?.operatorName || 'Detectando operador...'}
-          </Text>
-          <View style={styles.badgeRow}>
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>{currentNetwork?.networkGeneration || '...'}</Text>
-            </View>
-            <Text style={styles.techText}>{currentNetwork?.technologyDetail || ''}</Text>
-          </View>
-          <View style={styles.signalRow}>
-            <Text style={styles.signalValue}>{currentNetwork?.signal.dbm || -85} dBm</Text>
-            <Text style={styles.signalDesc}>{currentNetwork?.signal.qualityDescriptor}</Text>
-          </View>
-        </View>
+      {/* Degradation Alert Banner (RF-07) */}
+      <DegradationAlertBanner alerts={alerts} onDismiss={dismissAlert} />
 
-        {/* GPS Card */}
-        <View style={styles.card}>
-          <Text style={styles.cardLabel}>GEORREFERENCIACIÓN GPS</Text>
-          <Text style={styles.gpsCoord}>
-            {currentLocation ? `${currentLocation.latitude.toFixed(6)}, ${currentLocation.longitude.toFixed(6)}` : 'Buscando GPS...'}
-          </Text>
-          <Text style={styles.gpsAccuracy}>
-            Precisión estimada: ±{currentLocation ? Math.round(currentLocation.accuracy) : 10} metros
-          </Text>
-        </View>
+      {/* Active Screen View */}
+      <View style={styles.content}>
+        {activeTab === 'dashboard' && (
+          <DashboardScreen
+            onStartTest={() => setActiveTab('test')}
+            onGoToMap={() => setActiveTab('map')}
+          />
+        )}
+        {activeTab === 'test' && (
+          <ActiveTestScreen
+            onGoToMap={() => setActiveTab('map')}
+            onGoToDashboard={() => setActiveTab('dashboard')}
+          />
+        )}
+        {activeTab === 'map' && <CoverageMapScreen />}
+        {activeTab === 'analytics' && <AnalyticsScreen />}
+        {activeTab === 'history' && <HistoryScreen />}
+        {activeTab === 'settings' && <SettingsScreen />}
+      </View>
 
-        {/* Test Action Button */}
+      {/* Bottom Navigation Tab Bar */}
+      <View style={styles.tabBar}>
         <TouchableOpacity
-          style={[styles.testButton, isTesting && styles.testButtonDisabled]}
-          disabled={isTesting}
-          onPress={() => runFullQoSTest()}
+          style={[styles.tabItem, activeTab === 'dashboard' && styles.tabItemActive]}
+          onPress={() => setActiveTab('dashboard')}
         >
-          <Text style={styles.testButtonText}>
-            {isTesting ? `Ejecutando: ${activeTestPhase}...` : '▶ INICIAR TEST QOS COMPLETO'}
+          <Text style={[styles.tabIcon, activeTab === 'dashboard' && styles.tabIconActive]}>📊</Text>
+          <Text style={[styles.tabLabel, activeTab === 'dashboard' && styles.tabLabelActive]}>Panel</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.tabItem, activeTab === 'test' && styles.tabItemActive]}
+          onPress={() => setActiveTab('test')}
+        >
+          <Text style={[styles.tabIcon, activeTab === 'test' && styles.tabIconActive]}>
+            {isTesting ? '⏳' : '⚡'}
+          </Text>
+          <Text style={[styles.tabLabel, activeTab === 'test' && styles.tabLabelActive]}>
+            {isTesting ? 'Midiendo' : 'Test'}
           </Text>
         </TouchableOpacity>
 
-        {/* Recent records summary */}
-        <View style={styles.card}>
-          <Text style={styles.cardLabel}>HISTORIAL DE MEDICIONES ({records.length})</Text>
-          {records.slice(0, 3).map((r) => (
-            <View key={r.id} style={styles.historyItem}>
-              <Text style={styles.historyOp}>{r.networkType} • {r.operatorName}</Text>
-              <Text style={styles.historyMetrics}>
-                Ping: {r.pingAvg}ms | DL: {r.downloadMbps}Mbps | UL: {r.uploadMbps}Mbps | Score: {r.qosScore}/100
-              </Text>
-            </View>
-          ))}
-        </View>
-      </ScrollView>
+        <TouchableOpacity
+          style={[styles.tabItem, activeTab === 'map' && styles.tabItemActive]}
+          onPress={() => setActiveTab('map')}
+        >
+          <Text style={[styles.tabIcon, activeTab === 'map' && styles.tabIconActive]}>🗺️</Text>
+          <Text style={[styles.tabLabel, activeTab === 'map' && styles.tabLabelActive]}>Mapa</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.tabItem, activeTab === 'analytics' && styles.tabItemActive]}
+          onPress={() => setActiveTab('analytics')}
+        >
+          <Text style={[styles.tabIcon, activeTab === 'analytics' && styles.tabIconActive]}>📈</Text>
+          <Text style={[styles.tabLabel, activeTab === 'analytics' && styles.tabLabelActive]}>Gráficos</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.tabItem, activeTab === 'history' && styles.tabItemActive]}
+          onPress={() => setActiveTab('history')}
+        >
+          <Text style={[styles.tabIcon, activeTab === 'history' && styles.tabIconActive]}>🕒</Text>
+          <Text style={[styles.tabLabel, activeTab === 'history' && styles.tabLabelActive]}>Historial</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.tabItem, activeTab === 'settings' && styles.tabItemActive]}
+          onPress={() => setActiveTab('settings')}
+        >
+          <Text style={[styles.tabIcon, activeTab === 'settings' && styles.tabIconActive]}>⚙️</Text>
+          <Text style={[styles.tabLabel, activeTab === 'settings' && styles.tabLabelActive]}>Ajustes</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
@@ -98,130 +146,107 @@ export default function App(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#070a13'
+    backgroundColor: colors.background
   },
   header: {
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#1e293b'
+    borderBottomColor: colors.border,
+    backgroundColor: colors.backgroundSecondary
   },
-  title: {
-    fontSize: 20,
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: colors.text,
+    letterSpacing: -0.3
+  },
+  versionBadge: {
+    backgroundColor: 'rgba(6, 182, 212, 0.2)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: colors.primary
+  },
+  versionText: {
+    fontSize: 9,
+    fontWeight: '900',
+    color: colors.primary
+  },
+  networkPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: colors.surface,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border
+  },
+  networkDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3
+  },
+  networkPillText: {
+    fontSize: 10,
     fontWeight: '800',
-    color: '#ffffff'
+    color: colors.text,
+    fontFamily: 'monospace'
   },
-  subtitle: {
-    fontSize: 12,
-    color: '#06b6d4',
+  headerSubtitle: {
+    fontSize: 11,
+    color: colors.textSecondary,
     marginTop: 2
   },
   content: {
-    padding: 16,
-    gap: 16
+    flex: 1
   },
-  card: {
-    backgroundColor: '#0f172a',
-    borderRadius: 14,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#1e293b'
+  tabBar: {
+    flexDirection: 'row',
+    backgroundColor: colors.surface,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    paddingVertical: 6,
+    paddingHorizontal: 4,
+    justifyContent: 'space-around'
   },
-  cardLabel: {
+  tabItem: {
+    alignItems: 'center',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 8
+  },
+  tabItemActive: {
+    backgroundColor: colors.surfaceHighlight
+  },
+  tabIcon: {
+    fontSize: 16,
+    marginBottom: 2
+  },
+  tabIconActive: {
+    transform: [{ scale: 1.1 }]
+  },
+  tabLabel: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#64748b',
-    letterSpacing: 1,
-    marginBottom: 6
+    color: colors.textMuted
   },
-  operatorText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#f8fafc'
-  },
-  badgeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 6
-  },
-  badge: {
-    backgroundColor: 'rgba(6, 182, 212, 0.2)',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#06b6d4'
-  },
-  badgeText: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: '#22d3ee'
-  },
-  techText: {
-    fontSize: 12,
-    color: '#94a3b8'
-  },
-  signalRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'baseline',
-    marginTop: 12,
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#1e293b'
-  },
-  signalValue: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#10b981'
-  },
-  signalDesc: {
-    fontSize: 12,
-    color: '#94a3b8'
-  },
-  gpsCoord: {
-    fontSize: 15,
-    fontFamily: 'monospace',
-    fontWeight: '700',
-    color: '#38bdf8'
-  },
-  gpsAccuracy: {
-    fontSize: 11,
-    color: '#64748b',
-    marginTop: 4
-  },
-  testButton: {
-    backgroundColor: '#06b6d4',
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-    shadowColor: '#06b6d4',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8
-  },
-  testButtonDisabled: {
-    opacity: 0.5
-  },
-  testButtonText: {
-    color: '#ffffff',
-    fontWeight: '700',
-    fontSize: 14
-  },
-  historyItem: {
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#1e293b'
-  },
-  historyOp: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#e2e8f0'
-  },
-  historyMetrics: {
-    fontSize: 11,
-    color: '#94a3b8',
-    fontFamily: 'monospace',
-    marginTop: 2
+  tabLabelActive: {
+    color: colors.primary,
+    fontWeight: '900'
   }
 });

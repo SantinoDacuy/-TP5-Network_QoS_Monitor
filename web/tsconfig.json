@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "react-native": ["./src/react-native-shim.ts"],
+      "@core/*": ["../mobile/src/core/*"],
+      "@engine/*": ["../mobile/src/engine/*"],
+      "@geo/*": ["../mobile/src/geo/*"],
+      "@storage/*": ["../mobile/src/storage/*"],
+      "@notifications/*": ["../mobile/src/notifications/*"],
+      "@native/*": ["../mobile/src/native/*"],
+      "@state/*": ["../mobile/src/state/*"]
+    }
+  },
+  "include": ["src", "../mobile/src"]
+}
